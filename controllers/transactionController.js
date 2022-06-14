@@ -21,10 +21,7 @@ const addFruitToBasket = async(req , res ) =>{
     const fruit = req.body.fruit
     let userId = req.body.userId
     userId = ObjectId(userId)
-    // console.log(userId)
     const session = client.startSession();
-
-    
     const transactionOptions = {
         readPreference: 'primary',
         readConcern: { level: 'local' },
@@ -40,11 +37,22 @@ const addFruitToBasket = async(req , res ) =>{
                 console.log("Any operations that already occurred as part of this transaction will be rolled back.")
                 return
             }
+
+            const noItemLeft = await fruits.findOne({name:fruit , count:0})
+
+            if(noItemLeft){
+                await session.abortTransaction();
+                console.log('No fruit left at the Store')
+                console.log("Any operations that already occurred as part of this transaction will be rolled back.")
+                return
+            }
+            const doc1= await users.updateOne({_id:userId }, {$push:{basket:fruit}})
+            const doc2 = await fruits.updateOne({name:fruit} ,{$inc:{count:-1}})
  
         } , transactionOptions)
 
-        const doc = await users.updateOne({_id:userId }, {$push:{basket:fruit}})
-        console.log(doc)
+        
+
         if (transactionResults) {
             console.log("The transaction was successfull");
         } else {
