@@ -46,8 +46,8 @@ const addFruitToBasket = async(req , res ) =>{
                 console.log("Any operations that already occurred as part of this transaction will be rolled back.")
                 return
             }
-            const doc1= await users.updateOne({_id:userId }, {$push:{basket:fruit}})
-            const doc2 = await fruits.updateOne({name:fruit} ,{$inc:{count:-1}})
+            const doc1= await users.updateOne({_id:userId }, {$push:{basket:fruit}},{session})
+            const doc2 = await fruits.updateOne({name:fruit} ,{$inc:{count:-1}},{session})
  
         } , transactionOptions)
 
