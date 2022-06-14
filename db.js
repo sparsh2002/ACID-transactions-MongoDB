@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb');
-
+const userController = require('./controllers/userController')
 const URI = process.env.URI
 
 async function main() {
@@ -10,6 +10,7 @@ async function main() {
     try {
         
         await client.connect();
+        userController.injectDB(client)
         console.log('MongoDB connected succesfully')
        
 
@@ -20,4 +21,5 @@ async function main() {
 }
 
 main().catch(console.error);
+
 
