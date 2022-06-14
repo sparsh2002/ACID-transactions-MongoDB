@@ -15,6 +15,7 @@ const PORT = process.env.PORT
 // const db = require('./db.js')
 const router = require('./routes/index')
 const { injectFruitDB } = require('./controllers/fruitController')
+const { injectTransactionDB } = require('./controllers/transactionController')
 // db.connect()
 
 // middle ware
@@ -57,6 +58,7 @@ MongoClient.connect(
     .then(async client => {
       await injectUserDB(client)
       await injectFruitDB(client)
+      await injectTransactionDB(client)
       app.listen(port, () => {
         console.log(`listening on port ${port}`)
         console.log('MongoDB connected Successfully')
