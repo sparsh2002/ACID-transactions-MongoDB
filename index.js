@@ -4,12 +4,17 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
 const app = express()
-
+const { MongoClient } = require('mongodb');
+const {injectUserDB} = require('./controllers/userController')
 dotenv.config()
+const URI = process.env.URI
+const port = process.env.PORT
+
 
 const PORT = process.env.PORT
-const db = require('./db.js')
+// const db = require('./db.js')
 const router = require('./routes/index')
+const { injectFruitDB } = require('./controllers/fruitController')
 // db.connect()
 
 // middle ware
@@ -40,6 +45,20 @@ app.use("/api" , router)
 //     }
 // })
 
-app.listen(process.env.PORT  || PORT , ()=>{
-    console.log(`Listening on port no. ${PORT}`)
+MongoClient.connect(
+    process.env.URI,
+    { 
+      useNewUrlParser: true },
+  )
+    .catch(err => {
+      console.error(err.stack)
+      process.exit(1)
+    })
+    .then(async client => {
+      await injectUserDB(client)
+      await injectFruitDB(client)
+      app.listen(port, () => {
+        console.log(`listening on port ${port}`)
+        console.log('MongoDB connected Successfully')
+      })
 })

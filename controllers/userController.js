@@ -1,7 +1,6 @@
-const { MongoClient } = require('mongodb');
 const {User}  = require('../models/userModel')
 let users
-const injectDB = async (conn) =>{
+const injectUserDB = async (conn) =>{
     if(users){
         return 
     }
@@ -15,11 +14,17 @@ const injectDB = async (conn) =>{
 const addUser = async(req , res) =>{
     try {
         const user = new User(req.body)
-        console.log(user)
-        res.status(201).json({'message': 'got the data'})
+        await users.insertOne(user).then(()=>{
+            console.log('user inserted')
+        }).then(()=>{
+            res.status(201).json({message:'Success'})
+        }).catch(e=>{
+            res.status(400).json({error:e.message})
+        })
+        
     } catch (e) {
-        console.log(e)
+        res.status(500).json({message:'server eroror'})
     }
 }
 
-module.exports = {addUser , injectDB} 
+module.exports = {addUser , injectUserDB} 
