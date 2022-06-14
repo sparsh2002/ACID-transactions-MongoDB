@@ -1,0 +1,1 @@
+This repository shows how to implement ACID transactions in MongoDB
